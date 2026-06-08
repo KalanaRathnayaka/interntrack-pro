@@ -1,0 +1,95 @@
+.page-container {
+  padding: 40px;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 60px;
+  margin-bottom: 10px;
+}
+
+.page-subtitle {
+  text-align: center;
+  color: #9ca3af;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 35px;
+}
+
+.card-title {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.primary-btn {
+  background: #2563eb;
+  color: white;
+  padding: 10px 14px;
+}
+
+.secondary-btn {
+  background: #6b7280;
+  color: white;
+  padding: 10px 14px;
+}
+
+.edit-btn {
+  background: #2563eb;
+  color: white;
+  padding: 6px 10px;
+  margin-right: 8px;
+}
+
+.delete-btn {
+  background: #dc2626;
+  color: white;
+  padding: 6px 10px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 14px;
+  border-bottom: 1px solid #374151;
+  color: #d1d5db;
+}
+
+.data-table td {
+  padding: 14px;
+  border-bottom: 1px solid #374151;
+  color: #d1d5db;
+}
+
+.empty-state {
+  text-align: center;
+  color: #9ca3af;
+  padding: 40px;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 999px;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
