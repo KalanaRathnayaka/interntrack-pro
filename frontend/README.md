@@ -1,16 +1,136 @@
-# React + Vite
+# InternTrack Pro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+InternTrack Pro is a full-stack internship application tracking system designed to help students and job seekers organize, manage, and monitor their internship applications in one place.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Authentication
 
-## React Compiler
+* User Registration
+* User Login
+* JWT Authentication
+* Secure Route Protection
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Dashboard
 
-## Expanding the ESLint configuration
+* Total Applications
+* Pending Applications
+* Interview Applications
+* Accepted Applications
+* Rejected Applications
+* Upcoming Interviews
+* Resume Version Count
+* Success Rate Calculation
+* Top Applied Company
+* Application Analytics Charts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Company Management
+
+* Add New Companies
+* Edit Company Details
+* Delete Companies
+* Track Application Targets
+
+### Application Tracking
+
+* Add Internship Applications
+* Track Application Status
+* Interview Date Management
+* Interview Mode Tracking
+* Interview Round Tracking
+* Result Tracking
+* Notes and Interview Notes
+* Search and Filter Applications
+* Countdown to Interview Dates
+
+### Resume Management
+
+* Upload Resume Versions
+* Store Multiple Resume Variants
+* Open Resume Links
+* Edit Resume Information
+* Delete Resume Records
+
+## Tech Stack
+
+### Frontend
+
+* React.js
+* Vite
+* React Router
+* Axios
+* Recharts
+
+### Backend
+
+* Spring Boot
+* Spring Security
+* JWT Authentication
+
+### Database
+
+* MongoDB Atlas
+
+## Project Structure
+
+```text
+interntrack-pro/
+│
+├── backend/
+│   ├── controllers/
+│   ├── services/
+│   ├── repositories/
+│   ├── models/
+│   ├── security/
+│   └── config/
+│
+├── frontend/
+│   ├── pages/
+│   ├── components/
+│   ├── api/
+│   └── assets/
+│
+└── README.md
+```
+
+## Screenshots
+
+### Login Page
+
+Modern neumorphic-inspired authentication interface.
+
+### Dashboard
+
+Analytics dashboard with application statistics and charts.
+
+### Companies
+
+Manage internship target companies.
+
+### Applications
+
+Track application status, interview schedules, and outcomes.
+
+### Resumes
+
+Manage multiple resume versions and links.
+
+## Future Enhancements
+
+* Email Notifications
+* Interview Reminders
+* Resume File Upload Storage
+* Company Notes
+* Export Reports (PDF/Excel)
+* Dark Mode
+* AI-Based Resume Suggestions
+
+## Author
+
+Kalana Adithya Rathnayaka
+
+BSc (Hons) Information Technology Undergraduate
+Sri Lanka Institute of Information Technology (SLIIT)
+
+GitHub:
+https://github.com/KalanaRathnayaka
