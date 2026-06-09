@@ -21,32 +21,58 @@ function Applications() {
   const [applications, setApplications] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [companies, setCompanies] = useState([]);
+  const [resumes, setResumes] = useState([]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
 
   const [formData, setFormData] = useState({
     companyName: "",
     position: "",
+    resumeId: "",
+    resumeTitle: "",
     status: "Pending",
     applicationDate: "",
     interviewDate: "",
     notes: "",
+    interviewMode: "",
+    interviewRound: "",
+    interviewResult: "Waiting",
+    interviewNotes: "",
   });
 
   useEffect(() => {
-  async function loadData() {
-    try {
-      const applicationsResponse = await api.get("/applications");
-      setApplications(applicationsResponse.data);
+    async function loadData() {
+      try {
+        const applicationsResponse = await api.get("/applications");
+        setApplications(applicationsResponse.data);
 
-      const companiesResponse = await api.get("/companies");
-      setCompanies(companiesResponse.data);
+        const companiesResponse = await api.get("/companies");
+        setCompanies(companiesResponse.data);
 
-    } catch (error) {
-      console.error(error);
+        const resumesResponse = await api.get("/resumes");
+        setResumes(resumesResponse.data);
+      } catch (error) {
+        console.error("Failed to load data", error);
+      }
     }
-  }
 
-  loadData();
-}, []);
+    loadData();
+  }, []);
+
+  const filteredApplications = applications.filter((app) => {
+    const companyName = app.companyName || "";
+    const position = app.position || "";
+    const status = app.status || "";
+
+    const matchesSearch =
+      companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      position.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = statusFilter === "All" || status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   const handleChange = (e) => {
     setFormData({
@@ -57,13 +83,20 @@ function Applications() {
 
   const resetForm = () => {
     setEditingId(null);
+
     setFormData({
       companyName: "",
       position: "",
+      resumeId: "",
+      resumeTitle: "",
       status: "Pending",
       applicationDate: "",
       interviewDate: "",
       notes: "",
+      interviewMode: "",
+      interviewRound: "",
+      interviewResult: "Waiting",
+      interviewNotes: "",
     });
   };
 
@@ -95,12 +128,18 @@ function Applications() {
     setEditingId(app.id);
 
     setFormData({
-      companyName: app.companyName,
-      position: app.position,
-      status: app.status,
-      applicationDate: app.applicationDate,
-      interviewDate: app.interviewDate,
+      companyName: app.companyName || "",
+      position: app.position || "",
+      resumeId: app.resumeId || "",
+      resumeTitle: app.resumeTitle || "",
+      status: app.status || "Pending",
+      applicationDate: app.applicationDate || "",
+      interviewDate: app.interviewDate || "",
       notes: app.notes || "",
+      interviewMode: app.interviewMode || "",
+      interviewRound: app.interviewRound || "",
+      interviewResult: app.interviewResult || "Waiting",
+      interviewNotes: app.interviewNotes || "",
     });
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -117,6 +156,24 @@ function Applications() {
       console.error("Failed to delete application", error);
       alert("Failed to delete application.");
     }
+  };
+
+  const getDaysRemaining = (interviewDate) => {
+    if (!interviewDate) return "-";
+
+    const today = new Date();
+    const interview = new Date(interviewDate);
+
+    today.setHours(0, 0, 0, 0);
+    interview.setHours(0, 0, 0, 0);
+
+    const diffTime = interview - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) return "Passed";
+    if (diffDays === 0) return "Today";
+
+    return `${diffDays} Days Left`;
   };
 
   return (
@@ -160,6 +217,30 @@ function Applications() {
             />
 
             <select
+              name="resumeId"
+              value={formData.resumeId}
+              onChange={(e) => {
+                const selectedResume = resumes.find(
+                  (resume) => resume.id === e.target.value
+                );
+
+                setFormData({
+                  ...formData,
+                  resumeId: selectedResume?.id || "",
+                  resumeTitle: selectedResume?.title || "",
+                });
+              }}
+            >
+              <option value="">Select Resume</option>
+
+              {resumes.map((resume) => (
+                <option key={resume.id} value={resume.id}>
+                  {resume.title}
+                </option>
+              ))}
+            </select>
+
+            <select
               name="status"
               value={formData.status}
               onChange={handleChange}
@@ -188,8 +269,47 @@ function Applications() {
 
             <input
               name="notes"
-              placeholder="Notes"
+              placeholder="Application Notes"
               value={formData.notes}
+              onChange={handleChange}
+            />
+
+            <select
+              name="interviewMode"
+              value={formData.interviewMode}
+              onChange={handleChange}
+            >
+              <option value="">Interview Mode</option>
+              <option value="Online">Online</option>
+              <option value="Physical">Physical</option>
+              <option value="Phone">Phone</option>
+            </select>
+
+            <select
+              name="interviewRound"
+              value={formData.interviewRound}
+              onChange={handleChange}
+            >
+              <option value="">Interview Round</option>
+              <option value="HR">HR</option>
+              <option value="Technical">Technical</option>
+              <option value="Final">Final</option>
+            </select>
+
+            <select
+              name="interviewResult"
+              value={formData.interviewResult}
+              onChange={handleChange}
+            >
+              <option value="Waiting">Waiting</option>
+              <option value="Passed">Passed</option>
+              <option value="Failed">Failed</option>
+            </select>
+
+            <input
+              name="interviewNotes"
+              placeholder="Interview Notes"
+              value={formData.interviewNotes}
               onChange={handleChange}
             />
 
@@ -205,9 +325,42 @@ function Applications() {
           </form>
         </div>
 
+        <div className="card">
+          <h2 className="card-title">Search & Filter Applications</h2>
+
+          <div className="form-grid">
+            <input
+              type="text"
+              placeholder="Search by company or position..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="All">All Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Interview">Interview</option>
+              <option value="Interview Scheduled">Interview Scheduled</option>
+              <option value="Accepted">Accepted</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+
+          <p style={{ marginTop: "15px", color: "#9ca3af" }}>
+            Showing {filteredApplications.length} of {applications.length} applications
+          </p>
+        </div>
+
         {applications.length === 0 ? (
           <div className="card empty-state">
             No applications found. Add your first application above.
+          </div>
+        ) : filteredApplications.length === 0 ? (
+          <div className="card empty-state">
+            No matching applications found.
           </div>
         ) : (
           <div className="card table-wrapper">
@@ -216,19 +369,26 @@ function Applications() {
                 <tr>
                   <th>Company</th>
                   <th>Position</th>
+                  <th>Resume Used</th>
                   <th>Status</th>
                   <th>Application Date</th>
                   <th>Interview Date</th>
+                  <th>Countdown</th>
+                  <th>Mode</th>
+                  <th>Round</th>
+                  <th>Result</th>
                   <th>Notes</th>
+                  <th>Interview Notes</th>
                   <th>Action</th>
                 </tr>
               </thead>
 
               <tbody>
-                {applications.map((app) => (
+                {filteredApplications.map((app) => (
                   <tr key={app.id}>
                     <td>{app.companyName}</td>
                     <td>{app.position}</td>
+                    <td>{app.resumeTitle || "-"}</td>
                     <td>
                       <span
                         className="status-badge"
@@ -239,7 +399,12 @@ function Applications() {
                     </td>
                     <td>{app.applicationDate || "-"}</td>
                     <td>{app.interviewDate || "-"}</td>
+                    <td>{getDaysRemaining(app.interviewDate)}</td>
+                    <td>{app.interviewMode || "-"}</td>
+                    <td>{app.interviewRound || "-"}</td>
+                    <td>{app.interviewResult || "-"}</td>
                     <td>{app.notes || "-"}</td>
+                    <td>{app.interviewNotes || "-"}</td>
                     <td>
                       <button className="edit-btn" onClick={() => handleEdit(app)}>
                         Edit

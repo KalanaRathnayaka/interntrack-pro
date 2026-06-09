@@ -13,7 +13,10 @@ function Login() {
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -21,25 +24,60 @@ function Login() {
 
     try {
       const response = await api.post("/auth/login", formData);
+
       localStorage.setItem("token", response.data.token);
+
       navigate("/dashboard");
     } catch {
-      setMessage("Login failed");
+      setMessage("Invalid email or password");
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <div className="auth-logo" />
+          <span>InternTrack Pro</span>
+        </div>
 
-      <form onSubmit={handleSubmit}>
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-        <button type="submit">Login</button>
-      </form>
+        <h1 className="auth-title">Welcome back</h1>
 
-      <p>{message}</p>
-      <p>Don't have an account? <Link to="/register">Register</Link></p>
+        <p className="auth-subtitle">
+          Sign in to manage your internship applications with confidence.
+        </p>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          <button type="submit" className="auth-btn">
+            Login
+          </button>
+        </form>
+
+        {message && <p className="auth-error">{message}</p>}
+
+        <p className="auth-footer">
+          Don&apos;t have an account?
+          <Link to="/register"> Register</Link>
+        </p>
+      </div>
     </div>
   );
 }

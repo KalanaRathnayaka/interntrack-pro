@@ -49,4 +49,5 @@ public class ApplicationController {
     public DashboardStatsResponse getDashboardStats(Authentication authentication) {
         return applicationService.getDashboardStats(authentication);
     }
+
 }

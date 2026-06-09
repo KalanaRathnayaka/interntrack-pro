@@ -33,18 +33,57 @@ function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
+    <div className="auth-page">
+      <div className="auth-card">
+        <div className="auth-brand">
+          <div className="auth-logo" />
+          <span>InternTrack Pro</span>
+        </div>
 
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="fullName" placeholder="Full Name" onChange={handleChange} />
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-        <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-        <button type="submit">Register</button>
-      </form>
+        <h1 className="auth-title">Create your account</h1>
 
-      <p>{message}</p>
-      <p>Already have an account? <Link to="/login">Login</Link></p>
+        <p className="auth-subtitle">
+          Sign up to track applications, manage resumes, and stay organized.
+        </p>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Full Name"
+            value={formData.fullName}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          <button type="submit" className="auth-btn">
+            Register
+          </button>
+        </form>
+
+        {message && <p className="auth-error">{message}</p>}
+
+        <p className="auth-footer">
+          Already have an account?
+          <Link to="/login"> Login</Link>
+        </p>
+      </div>
     </div>
   );
 }

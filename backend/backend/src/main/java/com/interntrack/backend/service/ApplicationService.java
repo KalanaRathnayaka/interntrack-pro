@@ -9,6 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import com.interntrack.backend.dto.response.DashboardStatsResponse;
+import com.interntrack.backend.repository.ResumeRepository;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import java.util.List;
 
@@ -17,6 +22,7 @@ import java.util.List;
 public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
+    private final ResumeRepository resumeRepository;
 
     public ApplicationResponse addApplication(ApplicationRequest request, Authentication authentication) {
 
@@ -30,7 +36,15 @@ public class ApplicationService {
                 .interviewDate(request.getInterviewDate())
                 .notes(request.getNotes())
                 .userId(user.getId())
+                .resumeId(request.getResumeId())
+                .resumeTitle(request.getResumeTitle())
+                .interviewMode(request.getInterviewMode())
+                .interviewRound(request.getInterviewRound())
+                .interviewResult(request.getInterviewResult())
+                .interviewNotes(request.getInterviewNotes())
+
                 .build();
+
 
         Application savedApplication = applicationRepository.save(application);
 
@@ -55,7 +69,14 @@ public class ApplicationService {
                 application.getStatus(),
                 application.getApplicationDate(),
                 application.getInterviewDate(),
-                application.getNotes()
+                application.getNotes(),
+                application.getResumeId(),
+                application.getResumeTitle(),
+                application.getInterviewMode(),
+                application.getInterviewRound(),
+                application.getInterviewResult(),
+                application.getInterviewNotes()
+
         );
     }
     public ApplicationResponse updateApplication(
@@ -78,6 +99,10 @@ public class ApplicationService {
         application.setApplicationDate(request.getApplicationDate());
         application.setInterviewDate(request.getInterviewDate());
         application.setNotes(request.getNotes());
+        application.setInterviewMode(request.getInterviewMode());
+        application.setInterviewRound(request.getInterviewRound());
+        application.setInterviewResult(request.getInterviewResult());
+        application.setInterviewNotes(request.getInterviewNotes());
 
         Application updatedApplication = applicationRepository.save(application);
 
@@ -105,18 +130,63 @@ public class ApplicationService {
 
         User user = (User) authentication.getPrincipal();
 
-        List<Application> applications = applicationRepository.findByUserId(user.getId());
+        List<Application> applications =
+                applicationRepository.findByUserId(user.getId());
 
         long total = applications.size();
-        long pending = applications.stream().filter(app -> "Pending".equalsIgnoreCase(app.getStatus())).count();
+
+        long pending = applications.stream()
+                .filter(app -> "Pending".equalsIgnoreCase(app.getStatus()))
+                .count();
+
         long interview = applications.stream()
                 .filter(app ->
                         "Interview".equalsIgnoreCase(app.getStatus()) ||
                                 "Interview Scheduled".equalsIgnoreCase(app.getStatus()))
                 .count();
-        long accepted = applications.stream().filter(app -> "Accepted".equalsIgnoreCase(app.getStatus())).count();
-        long rejected = applications.stream().filter(app -> "Rejected".equalsIgnoreCase(app.getStatus())).count();
 
-        return new DashboardStatsResponse(total, pending, interview, accepted, rejected);
+        long accepted = applications.stream()
+                .filter(app -> "Accepted".equalsIgnoreCase(app.getStatus()))
+                .count();
+
+        long rejected = applications.stream()
+                .filter(app -> "Rejected".equalsIgnoreCase(app.getStatus()))
+                .count();
+
+        long upcomingInterviews = applications.stream()
+                .filter(app -> app.getInterviewDate() != null)
+                .filter(app -> !app.getInterviewDate().isBefore(LocalDate.now()))
+                .count();
+
+        double successRate = total == 0
+                ? 0
+                : Math.round(((double) accepted / total) * 100);
+
+        String mostAppliedCompany = applications.stream()
+                .filter(app -> app.getCompanyName() != null)
+                .collect(Collectors.groupingBy(
+                        Application::getCompanyName,
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .max(Comparator.comparingLong(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
+                .orElse("-");
+
+        long resumeVersions =
+                resumeRepository.findByUserId(user.getId()).size();
+
+        return new DashboardStatsResponse(
+                total,
+                pending,
+                interview,
+                accepted,
+                rejected,
+                upcomingInterviews,
+                successRate,
+                mostAppliedCompany,
+                resumeVersions
+        );
     }
 }

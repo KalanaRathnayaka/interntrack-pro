@@ -13,4 +13,10 @@ public class ApplicationRequest {
     private LocalDate applicationDate;
     private LocalDate interviewDate;
     private String notes;
+    private String resumeId;
+    private String resumeTitle;
+    private String interviewMode;
+    private String interviewRound;
+    private String interviewResult;
+    private String interviewNotes;
 }

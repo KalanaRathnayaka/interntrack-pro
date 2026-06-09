@@ -11,6 +11,8 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -24,6 +26,10 @@ function Dashboard() {
     interview: 0,
     accepted: 0,
     rejected: 0,
+    upcomingInterviews: 0,
+    successRate: 0,
+    mostAppliedCompany: "-",
+    resumeVersions: 0,
   });
 
   const [applications, setApplications] = useState([]);
@@ -64,6 +70,27 @@ function Dashboard() {
     )
     .sort((a, b) => new Date(a.interviewDate) - new Date(b.interviewDate));
 
+  const monthlyData = applications.reduce((acc, app) => {
+    if (!app.applicationDate) return acc;
+
+    const month = new Date(app.applicationDate).toLocaleString("default", {
+      month: "short",
+    });
+
+    const existingMonth = acc.find((item) => item.month === month);
+
+    if (existingMonth) {
+      existingMonth.applications += 1;
+    } else {
+      acc.push({
+        month,
+        applications: 1,
+      });
+    }
+
+    return acc;
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -72,96 +99,127 @@ function Dashboard() {
         <h1 className="page-title">InternTrack Dashboard</h1>
 
         <p className="page-subtitle">
-          Track your internship applications and progress.
+          Track your internship applications and progress with clear analytics and fast insights.
         </p>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "20px",
-            marginBottom: "40px",
-          }}
-        >
-          <div className="card">
-            <h3>Total Applications</h3>
-            <h1>{stats.total}</h1>
+        <div className="stats-grid">
+          <div className="card stat-card">
+            <div className="stat-label">Total Applications</div>
+            <div className="stat-value">{stats.total}</div>
           </div>
 
-          <div className="card">
-            <h3>Pending</h3>
-            <h1>{stats.pending}</h1>
+          <div className="card stat-card">
+            <div className="stat-label">Pending</div>
+            <div className="stat-value">{stats.pending}</div>
           </div>
 
-          <div className="card">
-            <h3>Interview</h3>
-            <h1>{stats.interview}</h1>
+          <div className="card stat-card">
+            <div className="stat-label">Interview</div>
+            <div className="stat-value">{stats.interview}</div>
           </div>
 
-          <div className="card">
-            <h3>Accepted</h3>
-            <h1>{stats.accepted}</h1>
+          <div className="card stat-card">
+            <div className="stat-label">Accepted</div>
+            <div className="stat-value">{stats.accepted}</div>
           </div>
 
-          <div className="card">
-            <h3>Rejected</h3>
-            <h1>{stats.rejected}</h1>
+          <div className="card stat-card">
+            <div className="stat-label">Rejected</div>
+            <div className="stat-value">{stats.rejected}</div>
+          </div>
+
+          <div className="card stat-card">
+            <div className="stat-label">Upcoming Interviews</div>
+            <div className="stat-value">{stats.upcomingInterviews}</div>
+          </div>
+
+          <div className="card stat-card">
+            <div className="stat-label">Resume Versions</div>
+            <div className="stat-value">{stats.resumeVersions}</div>
+          </div>
+
+          <div className="card stat-card">
+            <div className="stat-label">Success Rate</div>
+            <div className="stat-value">{stats.successRate}%</div>
+          </div>
+
+          <div className="card stat-card">
+            <div className="stat-label">Top Company</div>
+            <div className="stat-value stat-value--small">
+              {stats.mostAppliedCompany}
+            </div>
           </div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))",
-            gap: "25px",
-            marginBottom: "30px",
-          }}
-        >
+        <div className="chart-grid">
           <div className="card">
             <h2 className="card-title">Application Status Distribution</h2>
 
-            <ResponsiveContainer width="100%" height={350}>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={120}
-                  label
-                >
-                  {chartData.map((entry, index) => (
-                    <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
+            <div className="chart-wrapper">
+              <ResponsiveContainer width="100%" height={350}>
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    dataKey="value"
+                    nameKey="name"
+                    outerRadius={120}
+                    label
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell
+                        key={entry.name}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
 
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
           <div className="card">
             <h2 className="card-title">Applications by Status</h2>
 
+            <div className="chart-wrapper">
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="value" fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <div className="card card-highlight">
+          <h2 className="card-title">Monthly Application Trend</h2>
+
+          <div className="chart-wrapper">
             <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={chartData}>
+              <LineChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="month" />
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill="#3b82f6" />
-              </BarChart>
+                <Line
+                  type="monotone"
+                  dataKey="applications"
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(450px, 1fr))",
-            gap: "25px",
-          }}
-        >
+        <div className="list-grid">
           <div className="card">
             <h2 className="card-title">Recent Applications</h2>
 
@@ -169,16 +227,10 @@ function Dashboard() {
               <p className="empty-state">No applications found.</p>
             ) : (
               recentApplications.map((app) => (
-                <div
-                  key={app.id}
-                  style={{
-                    padding: "14px 0",
-                    borderBottom: "1px solid #374151",
-                  }}
-                >
+                <div key={app.id} className="activity-item">
                   <h3>{app.companyName}</h3>
-                  <p style={{ color: "#d1d5db" }}>{app.position}</p>
-                  <small style={{ color: "#9ca3af" }}>
+                  <p>{app.position}</p>
+                  <small>
                     Status: {app.status} | Applied: {app.applicationDate || "-"}
                   </small>
                 </div>
@@ -193,16 +245,10 @@ function Dashboard() {
               <p className="empty-state">No upcoming interviews.</p>
             ) : (
               upcomingInterviews.map((app) => (
-                <div
-                  key={app.id}
-                  style={{
-                    padding: "14px 0",
-                    borderBottom: "1px solid #374151",
-                  }}
-                >
+                <div key={app.id} className="activity-item">
                   <h3>{app.companyName}</h3>
-                  <p style={{ color: "#d1d5db" }}>{app.position}</p>
-                  <small style={{ color: "#9ca3af" }}>
+                  <p>{app.position}</p>
+                  <small>
                     Interview Date: {app.interviewDate || "-"}
                   </small>
                 </div>

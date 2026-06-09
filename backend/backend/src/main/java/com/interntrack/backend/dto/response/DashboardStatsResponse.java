@@ -12,4 +12,9 @@ public class DashboardStatsResponse {
     private long interview;
     private long accepted;
     private long rejected;
+    long upcomingInterviews;
+    double successRate;
+    String mostAppliedCompany;
+    long resumeVersions;
+
 }

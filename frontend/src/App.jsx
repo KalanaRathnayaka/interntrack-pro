@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Applications from "./pages/Applications";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Companies from "./pages/Companies";
+import Resumes from "./pages/Resumes";
 
 function App() {
   return (
@@ -41,11 +42,19 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/resumes"
+          element={
+            <ProtectedRoute>
+              <Resumes />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-      
+
     </BrowserRouter>
 
-    
+
   );
 }
 
