@@ -87,4 +87,4 @@ GitHub:
 https://github.com/KalanaRathnayaka
 
 LinkedIn:
-https://www.linkedin.com/in/kalana-adithya-96b210400/
+https://www.linkedin.com/in/kalana-adithya-rathnayaka/
