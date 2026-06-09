@@ -15,7 +15,7 @@ function Login() {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.dataset.field]: e.target.value,
     });
   };
 
@@ -47,22 +47,30 @@ function Login() {
           Sign in to manage your internship applications with confidence.
         </p>
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form
+          onSubmit={handleSubmit}
+          className="auth-form"
+          autoComplete="off"
+        >
           <input
             type="email"
-            name="email"
-            placeholder="Email Address"
+            name="login_email_address"
+            data-field="email"
+            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
+            autoComplete="new-email"
             required
           />
 
           <input
             type="password"
-            name="password"
+            name="login_password_field"
+            data-field="password"
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            autoComplete="new-password"
             required
           />
 
